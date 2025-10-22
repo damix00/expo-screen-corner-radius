@@ -2,39 +2,45 @@ import ExpoModulesCore
 import UIKit
 
 public class ExpoScreenCornerRadiusModule: Module {
+  private func getCornerRadiusSync() -> Double {
+    // iOS: Use UIDevice + utsname
+    func deviceModelIdentifier() -> String {
+      var systemInfo = utsname()
+      uname(&systemInfo)
+      let mirror = Mirror(reflecting: systemInfo.machine)
+      let identifier = mirror.children.reduce("") { acc, element in
+        guard let value = element.value as? Int8, value != 0 else { return acc }
+        return acc + String(UnicodeScalar(UInt8(value)))
+      }
+        
+        if let simModel = ProcessInfo.processInfo.environment["SIMULATOR_MODEL_IDENTIFIER"] {
+            return simModel
+          }
+        
+      return identifier
+    }
+
+    let model = deviceModelIdentifier()
+    let idiom = UIDevice.current.userInterfaceIdiom
+
+    if idiom == .phone {
+      return iphoneRadii[model] ?? 0
+    } else if idiom == .pad {
+      return ipadRadii[model] ?? 0
+    }
+    return 0
+  }
+
   public func definition() -> ModuleDefinition {
     Name("ExpoScreenCornerRadius")
 
-    // New function: getCornerRadius
-    Function("getCornerRadius") { () -> Double in
-      // iOS: Use UIDevice + utsname
-      func deviceModelIdentifier() -> String {
-        var systemInfo = utsname()
-        uname(&systemInfo)
-        let mirror = Mirror(reflecting: systemInfo.machine)
-        let identifier = mirror.children.reduce("") { acc, element in
-          guard let value = element.value as? Int8, value != 0 else { return acc }
-          return acc + String(UnicodeScalar(UInt8(value)))
-        }
-          
-          if let simModel = ProcessInfo.processInfo.environment["SIMULATOR_MODEL_IDENTIFIER"] {
-              return simModel
-            }
-          
-        return identifier
-      }
-
-      let model = deviceModelIdentifier()
-      let idiom = UIDevice.current.userInterfaceIdiom
-
-      if idiom == .phone {
-        return iphoneRadii[model] ?? 0
-      } else if idiom == .pad {
-        return ipadRadii[model] ?? 0
-      }
-      return 0
+    Function("getCornerRadiusSync") { () -> Double in
+      return getCornerRadiusSync()
     }
 
+    AsyncFunction("getCornerRadius") { () -> Double in
+      return getCornerRadiusSync()
+    }
   }
 }
 

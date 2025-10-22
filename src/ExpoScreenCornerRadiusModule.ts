@@ -1,7 +1,8 @@
 import { NativeModule, requireNativeModule } from "expo";
 
 declare class ExpoScreenCornerRadiusModule extends NativeModule {
-    getCornerRadius(): number;
+    getCornerRadiusSync(): number;
+    getCornerRadius(): Promise<number>;
 }
 
 // This call loads the native module object from the JSI.

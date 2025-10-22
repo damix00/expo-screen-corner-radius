@@ -1,6 +1,9 @@
 import { useEvent } from "expo";
-import ExpoScreenCornerRadius from "expo-screen-corner-radius";
-import { useState } from "react";
+import {
+    getCornerRadius,
+    getCornerRadiusSync,
+} from "expo-screen-corner-radius";
+import { useEffect, useState } from "react";
 import {
     Button,
     Dimensions,
@@ -13,7 +16,14 @@ import {
 
 export default function App() {
     const [h, setH] = useState(128);
-    const r = ExpoScreenCornerRadius.getCornerRadius();
+
+    const [asyncRadius, setAsyncRadius] = useState<number | null>(null);
+
+    useEffect(() => {
+        getCornerRadius().then(setAsyncRadius);
+    });
+
+    const r = getCornerRadiusSync();
 
     return (
         <>
@@ -44,11 +54,17 @@ export default function App() {
                 ]}>
                 <ScrollView style={styles.container}>
                     <Text style={styles.header}>Corner radius module</Text>
-                    <Text style={styles.header}>
-                        If you can see the red, something is wrong
+                    <Text style={{ marginHorizontal: 20, marginBottom: 20 }}>
+                        The red area at the bottom changes height on tap. It
+                        shows the corner radius applied to the screen.
                     </Text>
                     <Group name="Default corner radius">
                         <Text>{r}</Text>
+                    </Group>
+                    <Group name="Async corner radius">
+                        <Text>
+                            {asyncRadius === null ? "Loading..." : asyncRadius}
+                        </Text>
                     </Group>
                 </ScrollView>
             </SafeAreaView>
