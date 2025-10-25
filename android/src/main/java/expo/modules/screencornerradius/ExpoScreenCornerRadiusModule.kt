@@ -13,8 +13,8 @@ class ExpoScreenCornerRadiusModule : Module() {
     get() = appContext.currentActivity
 
 
-  private fun getCornerRadiusSync(): Int {
-    val activity = currentActivity ?: return 0
+  private fun getCornerRadiusSync(): Int? {
+    val activity = currentActivity ?: return null
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
       val window: Window? = activity.window
@@ -23,7 +23,7 @@ class ExpoScreenCornerRadiusModule : Module() {
       val pxRadius = insets
         ?.getRoundedCorner(RoundedCorner.POSITION_TOP_LEFT)
         ?.radius
-        ?: 0
+        ?: return null
 
       val density = activity.resources.displayMetrics.density
       val dpRadius = (pxRadius / density).toInt()
@@ -31,7 +31,7 @@ class ExpoScreenCornerRadiusModule : Module() {
       return dpRadius
     }
 
-    return 0
+    return null
   }
 
   // Each module class must implement the definition function.

@@ -2,7 +2,7 @@ import ExpoModulesCore
 import UIKit
 
 public class ExpoScreenCornerRadiusModule: Module {
-  private func getCornerRadiusSync() -> Double {
+  private func getCornerRadiusSync() -> Double? {
     // iOS: Use UIDevice + utsname
     func deviceModelIdentifier() -> String {
       var systemInfo = utsname()
@@ -24,9 +24,9 @@ public class ExpoScreenCornerRadiusModule: Module {
     let idiom = UIDevice.current.userInterfaceIdiom
 
     if idiom == .phone {
-      return iphoneRadii[model] ?? 0
+      return iphoneRadii[model]
     } else if idiom == .pad {
-      return ipadRadii[model] ?? 0
+      return ipadRadii[model]
     }
     return 0
   }
@@ -34,11 +34,11 @@ public class ExpoScreenCornerRadiusModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoScreenCornerRadius")
 
-    Function("getCornerRadiusSync") { () -> Double in
+    Function("getCornerRadiusSync") { () -> Double? in
       return getCornerRadiusSync()
     }
 
-    AsyncFunction("getCornerRadius") { () -> Double in
+    AsyncFunction("getCornerRadius") { () -> Double? in
       return getCornerRadiusSync()
     }
   }

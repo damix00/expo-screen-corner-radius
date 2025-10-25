@@ -17,11 +17,13 @@ import {
 export default function App() {
     const [h, setH] = useState(128);
 
-    const [asyncRadius, setAsyncRadius] = useState<number | null>(null);
+    const [asyncRadius, setAsyncRadius] = useState<number | null | undefined>(
+        undefined
+    );
 
     useEffect(() => {
-        getCornerRadius().then(setAsyncRadius);
-    });
+        getCornerRadius().then((r) => setAsyncRadius(r));
+    }, []);
 
     const r = getCornerRadiusSync();
 
@@ -41,7 +43,7 @@ export default function App() {
                         height: h,
                         zIndex: 10,
                         bottom: 0,
-                        borderRadius: r,
+                        borderRadius: r || 0,
                     },
                 ]}
             />
@@ -63,7 +65,9 @@ export default function App() {
                     </Group>
                     <Group name="Async corner radius">
                         <Text>
-                            {asyncRadius === null ? "Loading..." : asyncRadius}
+                            {asyncRadius !== undefined
+                                ? asyncRadius
+                                : "Loading..."}
                         </Text>
                     </Group>
                 </ScrollView>

@@ -1,14 +1,14 @@
 import { registerWebModule, NativeModule } from "expo";
 
 class ExpoScreenCornerRadiusModule extends NativeModule {
-    getCornerRadiusSync(): number {
-        // Web does not have access to screen corner radius, return 0 as a fallback.
-        return 0;
+    getCornerRadiusSync(): number | null {
+        // Web does not have access to screen corner radius, return null as a fallback.
+        return null;
     }
 
-    async getCornerRadius(): Promise<number> {
-        // Web does not have access to screen corner radius, return 0 as a fallback.
-        return 0;
+    async getCornerRadius(): Promise<number | null> {
+        // Web does not have access to screen corner radius, return null as a fallback.
+        return null;
     }
 }
 

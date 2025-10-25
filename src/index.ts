@@ -7,7 +7,7 @@ import ExpoScreenCornerRadiusModule from "./ExpoScreenCornerRadiusModule";
  * Synchronously gets the device's screen corner radius in dp
  * @returns The screen corner radius in dp
  */
-export function getCornerRadiusSync(): number {
+export function getCornerRadiusSync(): number | null {
     return ExpoScreenCornerRadiusModule.getCornerRadiusSync();
 }
 
@@ -15,6 +15,6 @@ export function getCornerRadiusSync(): number {
  * Asynchronously gets the device's screen corner radius in dp
  * @returns A promise resolving to the screen corner radius in dp
  */
-export async function getCornerRadius(): Promise<number> {
+export async function getCornerRadius(): Promise<number | null> {
     return ExpoScreenCornerRadiusModule.getCornerRadius();
 }

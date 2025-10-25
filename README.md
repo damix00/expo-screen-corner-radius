@@ -48,11 +48,11 @@ This library does not use any private APIs and is compliant with App Store guide
 
 A synchronous function that returns the device's screen corner radius.
 
-| Platform               | Return Value       | Notes                                                                                                                                                                                                     |
-| :--------------------- | :----------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **iOS** (iPhone, iPad) | **Points (dp/pt)** | The value is determined natively in Swift using the hardware model identifier (`uname()`) and a lookup table. Returns `0` if the device has no rounded corners (e.g., iPhone SE) or the model is unknown. |
-| **Android**            | **Points (dp/pt)** | Returns the device's corner radius in dp/pt, if available. Only available in Android 12 and later. Returns 0 otherwise.                                                                                   |
-| **Web / Other**        | **0**              | Always returns `0`.                                                                                                                                                                                       |
+| Platform               | Return Value       | Notes                                                                                                                                                                                                                     |
+| :--------------------- | :----------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **iOS** (iPhone, iPad) | **Points (dp/pt)** | The value is determined natively in Swift using the hardware model identifier (`uname()`) and a lookup table. Returns `0` if the device has no rounded corners (e.g., iPhone SE). Returns `null` if the model is unknown. |
+| **Android**            | **Points (dp/pt)** | Returns the device's corner radius in dp/pt, if available. Only available in Android 12 and later. Returns `null` otherwise.                                                                                              |
+| **Web / Other**        | **0**              | Always returns `null`.                                                                                                                                                                                                    |
 
 ### `getCornerRadius(): Promise<number>`
 
