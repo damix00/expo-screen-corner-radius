@@ -6,17 +6,19 @@
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "postinstall": "node -e \"const fs=require('fs'),path=require('path');const t=path.resolve(__dirname,'..');const l=path.resolve(__dirname,'node_modules','expo-screen-corner-radius');try{fs.unlinkSync(l)}catch{}fs.symlinkSync(t,l,'dir');console.log('Linked expo-screen-corner-radius ->',t)\""
   },
   "dependencies": {
-    "@react-native/gradle-plugin": "^0.75.5",
-    "expo": "~54.0.13",
-    "react": "19.1.0",
-    "react-native": "0.81.4"
+    "@react-native/gradle-plugin": "0.85.3",
+    "expo": "~56.0.3",
+    "expo-splash-screen": "~56.0.9",
+    "react": "19.2.3",
+    "react-native": "0.85.3"
   },
   "devDependencies": {
-    "@types/react": "~19.1.0",
-    "typescript": "~5.9.2"
+    "@types/react": "~19.2.14",
+    "typescript": "~6.0.3"
   },
   "private": true,
   "expo": {

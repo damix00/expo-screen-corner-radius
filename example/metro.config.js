@@ -19,16 +19,9 @@ config.resolver.nodeModulesPaths = [
 ];
 
 config.resolver.extraNodeModules = {
-  'expo-screen-corner-radius': '..',
+  'expo-screen-corner-radius': path.resolve(__dirname, '..'),
 };
 
 config.watchFolders = [path.resolve(__dirname, '..')];
-
-config.transformer.getTransformOptions = async () => ({
-  transform: {
-    experimentalImportSupport: false,
-    inlineRequires: true,
-  },
-});
 
 module.exports = config;

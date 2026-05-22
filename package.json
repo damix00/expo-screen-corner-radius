@@ -28,12 +28,13 @@
     "author": "Damjan Pavličević <damix4921@gmail.com> (https://github.com/damix00)",
     "license": "MIT",
     "homepage": "https://github.com/damix00/expo-screen-corner-radius#readme",
-    "dependencies": {},
     "devDependencies": {
-        "@types/react": "~19.1.0",
-        "expo-module-scripts": "^5.0.7",
-        "expo": "^54.0.12",
-        "react-native": "0.81.4"
+        "@types/react": "~19.2.14",
+        "eslint": "^10.4.0",
+        "expo": "^56.0.3",
+        "expo-module-scripts": "^56.0.2",
+        "react-native": "0.85.3",
+        "typescript": "~6.0.3"
     },
     "peerDependencies": {
         "expo": "*",
