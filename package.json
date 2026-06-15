@@ -1,6 +1,6 @@
 {
     "name": "expo-screen-corner-radius",
-    "version": "1.0.2",
+    "version": "1.1.0",
     "description": "Get the precise, native corner radius (in pixels/points) of the device screen, especially on iOS and Android devices with rounded displays.",
     "main": "build/index.js",
     "types": "build/index.d.ts",
@@ -47,10 +47,12 @@
     "homepage": "https://github.com/damix00/expo-screen-corner-radius#readme",
     "dependencies": {},
     "devDependencies": {
-        "@types/react": "~19.1.0",
-        "expo-module-scripts": "^5.0.7",
-        "expo": "^54.0.12",
-        "react-native": "0.81.4"
+        "@types/react": "~19.2.14",
+        "eslint": "^10.4.0",
+        "expo-module-scripts": "^56.0.2",
+        "expo": "^56.0.3",
+        "react-native": "0.85.3",
+        "typescript": "~6.0.3"
     },
     "peerDependencies": {
         "expo": "*",
