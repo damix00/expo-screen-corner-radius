@@ -109,7 +109,10 @@ let iphoneRadii: CornerData = [
     "iPhone18,2": 62,
     "iPhone18,3": 62,
     "iPhone18,4": 62,
-    "iPhone18,5": 47.33
+    "iPhone18,5": 47.33,
+    "iPhone19,2": 62,
+    "iPhone19,3": 62,
+    "iPhone19,7": 62
 ]
 
 let ipadRadii: CornerData = [
