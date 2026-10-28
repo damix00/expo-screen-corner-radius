@@ -54,3 +54,10 @@ yarn-error.log
 
 # Expo
 .expo/*
+
+# Swift Package Manager (used only for `swift test`)
+.build/
+.swiftpm/
+
+# Android build output
+android/build/
