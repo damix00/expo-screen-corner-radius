@@ -1,11 +1,12 @@
-import { useEvent } from "expo";
 import {
+    CornerRadii,
+    getCornerRadii,
+    getCornerRadiiSync,
     getCornerRadius,
     getCornerRadiusSync,
 } from "expo-screen-corner-radius";
 import { useEffect, useState } from "react";
 import {
-    Button,
     Dimensions,
     SafeAreaView,
     ScrollView,
@@ -21,11 +22,26 @@ export default function App() {
         undefined
     );
 
-    useEffect(() => {
-        getCornerRadius().then((r) => setAsyncRadius(r));
-    }, []);
+    const [r, setR] = useState(getCornerRadiusSync);
+    const [corners, setCorners] = useState<CornerRadii | null>(
+        getCornerRadiiSync
+    );
+    const [asyncCorners, setAsyncCorners] = useState<
+        CornerRadii | null | undefined
+    >(undefined);
 
-    const r = getCornerRadiusSync();
+    // The values change when a foldable is folded or the device is rotated.
+    useEffect(() => {
+        const refresh = () => {
+            setR(getCornerRadiusSync());
+            setCorners(getCornerRadiiSync());
+            getCornerRadius().then(setAsyncRadius);
+            getCornerRadii().then(setAsyncCorners);
+        };
+        refresh();
+        const subscription = Dimensions.addEventListener("change", refresh);
+        return () => subscription.remove();
+    }, []);
 
     return (
         <>
@@ -43,7 +59,10 @@ export default function App() {
                         height: h,
                         zIndex: 10,
                         bottom: 0,
-                        borderRadius: r || 0,
+                        borderTopLeftRadius: corners?.topLeft ?? 0,
+                        borderTopRightRadius: corners?.topRight ?? 0,
+                        borderBottomLeftRadius: corners?.bottomLeft ?? 0,
+                        borderBottomRightRadius: corners?.bottomRight ?? 0,
                     },
                 ]}
             />
@@ -67,6 +86,16 @@ export default function App() {
                         <Text>
                             {asyncRadius !== undefined
                                 ? asyncRadius
+                                : "Loading..."}
+                        </Text>
+                    </Group>
+                    <Group name="Per-corner radii">
+                        <Text>{JSON.stringify(corners, null, 2)}</Text>
+                    </Group>
+                    <Group name="Async per-corner radii">
+                        <Text>
+                            {asyncCorners !== undefined
+                                ? JSON.stringify(asyncCorners, null, 2)
                                 : "Loading..."}
                         </Text>
                     </Group>

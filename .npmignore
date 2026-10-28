@@ -12,3 +12,9 @@ __tests__
 /android/src/test/
 /android/build/
 /example/
+
+# Swift unit tests (run with `swift test`, not shipped)
+/Package.swift
+/Package.resolved
+/Tests/
+/.build/

@@ -1,13 +1,22 @@
 import { registerWebModule, NativeModule } from "expo";
 
+import type { CornerRadii } from "./ExpoScreenCornerRadius.types";
+
+// Web does not have access to the screen corner radius, so every function returns null.
 class ExpoScreenCornerRadiusModule extends NativeModule {
     getCornerRadiusSync(): number | null {
-        // Web does not have access to screen corner radius, return null as a fallback.
         return null;
     }
 
     async getCornerRadius(): Promise<number | null> {
-        // Web does not have access to screen corner radius, return null as a fallback.
+        return null;
+    }
+
+    getCornerRadiiSync(): CornerRadii | null {
+        return null;
+    }
+
+    async getCornerRadii(): Promise<CornerRadii | null> {
         return null;
     }
 }
