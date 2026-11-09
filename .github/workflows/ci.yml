@@ -82,7 +82,7 @@ jobs:
           cache-dependency-path: |
             package-lock.json
             example/package-lock.json
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: 17
