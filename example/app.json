@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "expo-screen-corner-radius-example",
+    "name": "Screen Corners",
     "slug": "expo-screen-corner-radius-example",
     "version": "1.0.0",
-    "orientation": "portrait",
+    "orientation": "default",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "dark",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "expo.modules.screencornerradius.example"
@@ -13,7 +13,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#07070B"
       },
       "predictiveBackGestureEnabled": false,
       "package": "expo.modules.screencornerradius.example"
@@ -27,9 +27,11 @@
         {
           "image": "./assets/splash-icon.png",
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#07070B"
         }
-      ]
+      ],
+      "expo-status-bar",
+      "./plugins/withSceneDelegate"
     ]
   }
 }

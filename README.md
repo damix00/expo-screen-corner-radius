@@ -1,86 +1,81 @@
 # expo-screen-corner-radius
 
-Get the precise, native corner radius of the device screen on iOS and Android devices with rounded displays.
+Get the precise, native corner radius of the device screen on iOS and Android devices with rounded displays, and make your UI follow it.
+
+<p align="center">
+  <img src="docs/screenshots/showcase.png" alt="The example app on iPhone 18 Pro, iPhone Duo, iPad Air and Pixel 9a. A purple outline traces each screen's corners exactly." width="100%" />
+</p>
 
 ## Installation
 
 ```bash
-# Install the library
-npm install expo-screen-corner-radius
+npx expo install expo-screen-corner-radius
 ```
+
+Note: **Not available** in Expo Go. Use a [development build](https://docs.expo.dev/develop/development-builds/introduction/).
 
 ## Usage
 
-```jsx
-import { getCornerRadiusSync } from "expo-screen-corner-radius";
+### A view that matches the screen
 
-export default function App() {
-    const radius = getCornerRadiusSync(); // Get corner radius in dp
-
-    return <Text>Device Corner Radius: {radius}</Text>;
-}
-
-// or using the async function
-
-import { getCornerRadius } from "expo-screen-corner-radius";
-
-export default function App() {
-    const [radius, setRadius] = useState(0);
-
-    useEffect(() => {
-        getCornerRadius().then(setRadius);
-    }, []);
-
-    return <Text>Device Corner Radius: {radius}</Text>;
-}
-
-```
-
-### Per-corner radii
-
-Most screens have four identical corners, but some don't. The outer screen of the foldable iPhone Duo is tighter on the hinge side. `getCornerRadiiSync()` and `getCornerRadii()` return each corner separately:
+`<ScreenCornerView>` is a `View` whose corners follow the screen's corners. Pass `inset` when the view sits away from the edge, and each corner shrinks by that much so it stays concentric with the screen:
 
 ```jsx
-import { getCornerRadiiSync } from "expo-screen-corner-radius";
+import { ScreenCornerView } from "expo-screen-corner-radius";
 
-const corners = getCornerRadiiSync();
-// { topLeft: 8, topRight: 59, bottomLeft: 8, bottomRight: 59 }
-
-<View
-    style={{
-        borderTopLeftRadius: corners?.topLeft ?? 0,
-        borderTopRightRadius: corners?.topRight ?? 0,
-        borderBottomLeftRadius: corners?.bottomLeft ?? 0,
-        borderBottomRightRadius: corners?.bottomRight ?? 0,
-    }}
+<ScreenCornerView
+    inset={12}
+    fallbackRadius={24}
+    style={{ position: "absolute", top: 12, left: 12, right: 12, bottom: 12 }}
 />
 ```
 
-Note: **Not available** in Expo Go. Use a custom development client or build a standalone app to test.
+### Hooks
+
+`useCornerRadius()` and `useCornerRadii()` return the current values and update when a foldable is folded or the device is rotated:
+
+```jsx
+import { useCornerRadius, useCornerRadii } from "expo-screen-corner-radius";
+
+function Card() {
+    const radius = useCornerRadius(); // 62 on iPhone 18 Pro
+    const corners = useCornerRadii(); // { topLeft, topRight, bottomLeft, bottomRight }
+
+    return <View style={{ borderRadius: radius ?? 0 }} />;
+}
+```
+
+### Functions
+
+Outside React, call the functions directly:
+
+```js
+import {
+    getCornerRadiusSync,
+    getCornerRadius,
+    getCornerRadiiSync,
+    getCornerRadii,
+} from "expo-screen-corner-radius";
+
+const radius = getCornerRadiusSync(); // number | null
+const corners = await getCornerRadii(); // CornerRadii | null
+```
 
 ## App Store Compliance
 
-This library does not use any private APIs and is compliant with App Store guidelines for both iOS and Android platforms.
+This library doesn't use any private APIs, and it complies with the App Store and Google Play guidelines.
 
 ## API Reference
 
-### `getCornerRadiusSync(): number | null`
+All values are in points on iOS and dp on Android, the units React Native styles use.
 
-A synchronous function that returns the device's screen corner radius. On devices whose corners differ, such as the [iPhone Duo](#foldable-iphone-iphone-duo), it returns the **largest** corner of the screen the app is on.
+### `useCornerRadius(): number | null`
 
-| Platform               | Return Value       | Notes                                                                                                                                                                                                                     |
-| :--------------------- | :----------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **iOS** (iPhone, iPad) | **Points (dp/pt)** | The value is determined natively in Swift using the hardware model identifier (`uname()`) and a lookup table. Returns `0` if the device has no rounded corners (e.g., iPhone SE). Returns `null` if the model is unknown. |
-| **Android**            | **Points (dp/pt)** | Returns the largest of the four corners reported by `WindowInsets.getRoundedCorner()`, in dp. Only available in Android 12 and later. Returns `null` otherwise.                                                          |
-| **Web / Other**        | **`null`**         | Always returns `null`.                                                                                                                                                                                                    |
+The screen corner radius, re-read whenever `Dimensions` emits a `change` event. On devices whose corners differ, this is the largest corner.
 
-### `getCornerRadius(): Promise<number | null>`
+### `useCornerRadii(): CornerRadii | null`
 
-An asynchronous function that returns a promise resolving to the device's screen corner radius. Same behavior as `getCornerRadiusSync()`.
-
-### `getCornerRadiiSync(): CornerRadii | null`
-
-A synchronous function that returns the radius of each screen corner in dp, or `null` where `getCornerRadiusSync()` would return `null`.
+The radius of each corner, re-read whenever `Dimensions` emits a `change` event. Returns the same object while the values don't change, so it's safe to use in dependency arrays.
 
 ```ts
 type CornerRadii = {
@@ -91,15 +86,47 @@ type CornerRadii = {
 };
 ```
 
-Corners are named for where they appear in your interface, so `topLeft` is always the top left of what you see, whichever way the device is turned. Every device except the iPhone Duo returns the same value on all four corners on iOS. On Android, the values come straight from the system for each corner.
+Corners are named for where they appear in your interface, so `topLeft` is always the top left of what you see, whichever way the device is turned.
 
-### `getCornerRadii(): Promise<CornerRadii | null>`
+### `<ScreenCornerView inset? fallbackRadius? {...ViewProps} />`
 
-An asynchronous function that returns a promise resolving to the radius of each screen corner. Same behavior as `getCornerRadiiSync()`.
+| Prop             | Default | Description                                                                                       |
+| :--------------- | :------ | :------------------------------------------------------------------------------------------------ |
+| `inset`          | `0`     | Distance in dp from the screen edge. Each corner shrinks by this amount, but never below `0`.    |
+| `fallbackRadius` | `0`     | Radius used when the screen's corners are unknown, such as on web or before Android 12.         |
+
+Corner styles you pass in `style` override the computed ones. On iOS, corners use `borderCurve: "continuous"` to match the display's shape.
+
+### `getConcentricRadii(radii, inset?, fallbackRadius?): CornerRadii`
+
+The calculation behind `<ScreenCornerView>`, for when you need the numbers yourself.
+
+### `getCornerRadiusSync(): number | null` and `getCornerRadius(): Promise<number | null>`
+
+The device's screen corner radius. On devices whose corners differ, such as the [iPhone Duo](#foldable-iphone-iphone-duo), it's the **largest** corner of the screen the app is on.
+
+### `getCornerRadiiSync(): CornerRadii | null` and `getCornerRadii(): Promise<CornerRadii | null>`
+
+The radius of each screen corner, or `null` where `getCornerRadiusSync()` would return `null`.
+
+### Platform behavior
+
+| Platform               | Source                                                                                     | Returns `null` when                                                                                                       |
+| :--------------------- | :----------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------ |
+| **iOS** (iPhone, iPad) | Hardware model identifier and a lookup table from [BezelKit](#data-source).                | The model is unknown and older than the newest known model. Devices without rounded corners (e.g. iPhone SE) return `0`. |
+| **tvOS** and others    | —                                                                                          | Never. Always returns `0`.                                                                                                |
+| **Android**            | `WindowInsets.getRoundedCorner()`, rounded to two decimal places.                          | Before Android 12, when the system doesn't report rounded corners, or before the activity's window is attached.          |
+| **Web**                | —                                                                                          | Always.                                                                                                                   |
+
+**New iPhones and iPads:** a model released after the version of this package you're using, such as `iPhone20,1`, gets the most common radius of the newest generation the package knows. Update the package to get the exact value.
 
 ## Foldable iPhone (iPhone Duo)
 
 Apple's foldable iPhone (`iPhone19,4`, listed in Xcode as "iPhone Duo") has two screens with different corners:
+
+<p align="center">
+  <img src="docs/screenshots/iphone-duo.png" alt="The example app on the iPhone Duo's outer screen: 8 pt corners on the hinge side, 59 pt on the other." width="320" />
+</p>
 
 | Screen                  | Top left | Top right | Bottom left | Bottom right |
 | :---------------------- | -------: | --------: | ----------: | -----------: |
@@ -107,28 +134,7 @@ Apple's foldable iPhone (`iPhone19,4`, listed in Xcode as "iPhone Duo") has two 
 | Outer, landscape (left) |        8 |         8 |          59 |           59 |
 | Inner, any orientation  |       55 |        55 |          55 |           55 |
 
-On iOS, the module checks which screen the app is on by its native resolution and turns that screen's corners to match the interface orientation. `getCornerRadiusSync()` returns `59` on the outer screen and `55` on the inner screen.
-
-The values change when the device is folded, unfolded or rotated, so read them again whenever the window changes:
-
-```jsx
-import { getCornerRadiiSync } from "expo-screen-corner-radius";
-import { useEffect, useState } from "react";
-import { Dimensions } from "react-native";
-
-function useCornerRadii() {
-    const [corners, setCorners] = useState(getCornerRadiiSync);
-
-    useEffect(() => {
-        const subscription = Dimensions.addEventListener("change", () =>
-            setCorners(getCornerRadiiSync())
-        );
-        return () => subscription.remove();
-    }, []);
-
-    return corners;
-}
-```
+On iOS, the module checks which screen the app is on by its native resolution and turns that screen's corners to match the interface orientation. `getCornerRadiusSync()` returns `59` on the outer screen and `55` on the inner screen. The hooks and `<ScreenCornerView>` update when the device is folded, unfolded or rotated.
 
 These are the corners of the display itself. A window that doesn't reach the edge of the screen has rounder corners of its own, which this module doesn't report.
 
@@ -136,10 +142,21 @@ These are the corners of the display itself. A window that doesn't reach the edg
 
 Contributions are welcome! If you find any inaccuracies in the corner radius values, or anything else, please open a pull request.
 
+### Device data
+
+`ios/CornerRadiusData.swift` is generated from [BezelKit](https://github.com/markbattistella/BezelKit). Don't edit it by hand. Fix the data upstream, then run:
+
+```bash
+npm run sync-data            # regenerate the file
+npm run sync-data -- --check # exit 1 if it's out of date
+```
+
+A scheduled workflow runs the check every week, so new devices get noticed.
+
 ### Running the tests
 
 ```bash
-npm test          # TypeScript wrapper (Jest)
+npm test          # TypeScript wrapper, hooks and component (Jest)
 swift test        # iOS lookup, screen matching and rotation (macOS, no simulator needed)
 
 # Android helpers (JUnit), via the example app
@@ -147,9 +164,16 @@ cd example && npm install && npx expo prebuild --platform android --no-install
 cd android && ./gradlew :expo-screen-corner-radius:testDebugUnitTest
 ```
 
-The iOS lookup logic lives in `ios/CornerRadiusResolver.swift`, and the data lives in `ios/CornerRadiusData.swift`. Neither file depends on UIKit, which is why `swift test` can run them on macOS. To add a device, add its model identifier to `iphoneRadii` or `ipadRadii`. If its screens' corners differ, also add an entry to `multiScreenRadii`.
+The iOS lookup logic lives in `ios/CornerRadiusResolver.swift`. It doesn't depend on UIKit, which is why `swift test` can run it on macOS.
 
-CI runs all three suites, plus lint and build, on every push and pull request.
+CI runs all three suites, lint, build and an iOS build of the example app on every push and pull request. It also checks that the committed `build/` folder is up to date.
+
+### Example app
+
+```bash
+cd example && npm install
+npx expo run:ios     # or run:android
+```
 
 ### Releasing
 
@@ -165,4 +189,4 @@ One-time setup: on npmjs.com, open the package's **Settings**, go to **Trusted P
 
 ## Data Source
 
-The corner radius values for iOS are sourced from the community-maintained data in the open-source [BezelKit](https://github.com/markbattistella/BezelKit/tree/main) repository. That includes the per-screen corners of the iPhone Duo, and the logic for matching screens and rotating corners is ported from it.
+The corner radius values for iOS come from the community-maintained data in the open-source [BezelKit](https://github.com/markbattistella/BezelKit) repository. That includes the per-screen corners of the iPhone Duo. The logic for matching screens and rotating corners is ported from it.

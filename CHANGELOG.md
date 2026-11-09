@@ -1,5 +1,28 @@
 # Changelog
 
+## 1.3.0
+
+### Added
+
+- `useCornerRadii()` and `useCornerRadius()` hooks, which update when the device is folded, unfolded or rotated.
+- `<ScreenCornerView>`, a `View` whose corners follow the screen's. Its `inset` prop keeps an inset view concentric with the screen, and `fallbackRadius` covers devices that don't report a radius. `getConcentricRadii()` does the same calculation for your own styles.
+- On iOS, models released after this version (a newer generation than any known model) get an estimate from the newest known generation instead of `null`.
+- Data for the cellular iPad Air (M3), iPad (A16) and iPad Air 13-inch (M4) (`iPad15,4`, `iPad15,6`, `iPad15,8`, `iPad16,10`, `iPad16,11`), the first iPad Pro 12.9-inch (`iPad6,7`, `iPad6,8`) and iPod touch.
+- `npm run sync-data`, which regenerates `ios/CornerRadiusData.swift` from BezelKit, and a weekly check that it's up to date.
+
+### Changed
+
+- On Android, radii are no longer truncated to whole dp. They're rounded to two decimal places, matching iOS (for example `39.33` instead of `39`).
+- `expo` peer dependency is now `>=56.0.0`.
+
+### Fixed
+
+- The iPad Air 11-inch (M4) (`iPad16,8`) returned `0` instead of `18`.
+
+### Removed
+
+- The unused template `ExpoScreenCornerRadiusView`, which compiled a `WKWebView` into every app.
+
 ## 1.2.0
 
 ### Added

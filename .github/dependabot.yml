@@ -1,0 +1,20 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: monthly
+    # Expo SDK upgrades are done by hand, since expo, react-native and react move together.
+    ignore:
+      - dependency-name: expo
+        update-types: [version-update:semver-major]
+      - dependency-name: expo-module-scripts
+        update-types: [version-update:semver-major]
+      - dependency-name: react-native
+      - dependency-name: react
+      - dependency-name: react-dom
+      - dependency-name: react-test-renderer

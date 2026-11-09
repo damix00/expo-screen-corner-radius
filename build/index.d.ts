@@ -1,11 +1,14 @@
 import type { CornerRadii } from "./ExpoScreenCornerRadius.types";
+import { useCornerRadii, useCornerRadius } from "./hooks";
 export type { CornerRadii };
+export { useCornerRadii, useCornerRadius };
+export { ScreenCornerView, getConcentricRadii, type ScreenCornerViewProps, } from "./ScreenCornerView";
 /**
  * Synchronously gets the device's screen corner radius in dp.
  *
  * On devices whose corners differ, such as the foldable iPhone Duo, this is the largest corner
- * of the screen the app is on, so it can change when the device is folded. Read it again when
- * `Dimensions` emits a `change` event.
+ * of the screen the app is on, so it can change when the device is folded. In a component, use
+ * {@link useCornerRadius}, which updates automatically.
  * @returns The screen corner radius in dp, or null if unknown
  */
 export declare function getCornerRadiusSync(): number | null;
@@ -21,8 +24,8 @@ export declare function getCornerRadius(): Promise<number | null>;
  *
  * Most devices return the same value for all four corners. On the foldable iPhone Duo the outer
  * screen is tighter on the hinge side, and the corners are turned to match the interface
- * orientation. The values change when the device is folded or rotated, so read them again when
- * `Dimensions` emits a `change` event.
+ * orientation. The values change when the device is folded or rotated. In a component, use
+ * {@link useCornerRadii}, which updates automatically.
  * @returns The corner radii in dp, or null if unknown
  */
 export declare function getCornerRadiiSync(): CornerRadii | null;

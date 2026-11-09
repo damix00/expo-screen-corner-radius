@@ -1,9 +1,17 @@
 package expo.modules.screencornerradius
 
+import kotlin.math.roundToLong
+
 // Pure helpers, kept free of Android framework types so they can be unit tested on the JVM.
 object CornerRadiiCalculator {
-  /** Converts a radius in physical pixels to dp, rounding down to match earlier releases. */
-  fun pxToDp(px: Int, density: Float): Int = (px / density).toInt()
+  /**
+   * Converts a radius in physical pixels to dp, rounded to two decimal places so values match
+   * the precision iOS reports (for example 39.33).
+   */
+  fun pxToDp(px: Int, density: Float): Double {
+    if (density <= 0f) return 0.0
+    return (px / density.toDouble() * 100).roundToLong() / 100.0
+  }
 
   /**
    * Builds the per-corner map returned to JavaScript. Corners the system doesn't report count
@@ -15,7 +23,7 @@ object CornerRadiiCalculator {
     bottomLeftPx: Int?,
     bottomRightPx: Int?,
     density: Float
-  ): Map<String, Int>? {
+  ): Map<String, Double>? {
     if (topLeftPx == null && topRightPx == null && bottomLeftPx == null && bottomRightPx == null) {
       return null
     }
@@ -28,5 +36,5 @@ object CornerRadiiCalculator {
   }
 
   /** The largest corner, which is what `getCornerRadius` returns. */
-  fun largest(radii: Map<String, Int>?): Int? = radii?.values?.maxOrNull()
+  fun largest(radii: Map<String, Double>?): Double? = radii?.values?.maxOrNull()
 }

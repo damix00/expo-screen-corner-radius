@@ -11,10 +11,13 @@
   },
   "dependencies": {
     "@react-native/gradle-plugin": "0.85.3",
-    "expo": "~56.0.3",
-    "expo-splash-screen": "~56.0.9",
+    "expo": "~56.0.24",
+    "expo-device": "~56.0.4",
+    "expo-splash-screen": "~56.0.16",
+    "expo-status-bar": "~56.0.4",
     "react": "19.2.3",
-    "react-native": "0.85.3"
+    "react-native": "0.85.3",
+    "react-native-safe-area-context": "~5.7.0"
   },
   "devDependencies": {
     "@types/react": "~19.2.14",

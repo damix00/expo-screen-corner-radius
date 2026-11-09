@@ -78,6 +78,44 @@ extension CornerRadii {
   }
 }
 
+/// Splits an identifier like `iPhone19,4` into its generation (19) and variant (4).
+func parseModelIdentifier(_ model: String) -> (prefix: String, generation: Int, variant: Int)? {
+  guard let digits = model.firstIndex(where: \.isNumber) else { return nil }
+  let parts = model[digits...].split(separator: ",")
+  guard parts.count == 2, let generation = Int(parts[0]), let variant = Int(parts[1]) else {
+    return nil
+  }
+  return (String(model[..<digits]), generation, variant)
+}
+
+/// Estimates the radius of a model released after this table was last updated.
+///
+/// Uses the most common radius of the newest known generation. Returns `nil` for unknown models
+/// that are not newer than every known model, since those are more likely to be unusual
+/// hardware than a new release.
+func estimateRadius(forNewerModel model: String, in table: CornerData) -> Double? {
+  guard let target = parseModelIdentifier(model) else { return nil }
+  let known = table.keys.compactMap(parseModelIdentifier).filter { $0.prefix == target.prefix }
+  guard let newest = known.map(\.generation).max(), target.generation >= newest else {
+    return nil
+  }
+  if target.generation == newest,
+    let newestVariant = known.filter({ $0.generation == newest }).map(\.variant).max(),
+    target.variant < newestVariant
+  {
+    return nil
+  }
+
+  var counts: [Double: Int] = [:]
+  for id in known where id.generation == newest {
+    if let radius = table["\(id.prefix)\(id.generation),\(id.variant)"] {
+      counts[radius, default: 0] += 1
+    }
+  }
+  // Most common radius; ties go to the larger one so the result doesn't depend on order.
+  return counts.max { a, b in a.value == b.value ? a.key < b.key : a.value < b.value }?.key
+}
+
 /// Resolves the corners of the screen the app is on.
 ///
 /// - Parameters:
@@ -86,7 +124,8 @@ extension CornerRadii {
 ///   - nativeSize: `UIScreen.nativeBounds.size` of the active screen. Compared by its shorter and
 ///     longer side, so it doesn't matter whether the system reports it turned.
 ///   - orientation: The current interface orientation.
-/// - Returns: The corners, or `nil` if the model is unknown.
+/// - Returns: The corners, or `nil` if the model is unknown and not newer than every known
+///   model (see ``estimateRadius(forNewerModel:in:)``).
 func resolveCornerRadii(
   model: String,
   idiom: DeviceIdiom,
@@ -100,7 +139,9 @@ func resolveCornerRadii(
   case .other: return CornerRadii(uniform: 0)
   }
 
-  guard let radius = table[model] else { return nil }
+  guard let radius = table[model] ?? estimateRadius(forNewerModel: model, in: table) else {
+    return nil
+  }
   let uniform = CornerRadii(uniform: radius)
 
   guard let screens = multiScreenRadii[model], let nativeSize else { return uniform }

@@ -13,7 +13,7 @@ class ExpoScreenCornerRadiusModule : Module() {
 
   // Reads each corner of the display the activity is on, in dp. Returns null below Android 12
   // or when the system doesn't report rounded corners.
-  private fun getCornerRadii(): Map<String, Int>? {
+  private fun getCornerRadii(): Map<String, Double>? {
     val activity = currentActivity ?: return null
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {

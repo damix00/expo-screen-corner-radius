@@ -97,8 +97,42 @@ final class CornerRadiusResolverTests: XCTestCase {
     XCTAssertNil(resolve("iPhone18,1", idiom: .pad))
   }
 
-  func testUnknownModelReturnsNil() {
-    XCTAssertNil(resolve("iPhone99,1"))
+  func testUnknownOlderModelReturnsNil() {
+    XCTAssertNil(resolve("iPhone12,9"))
+    XCTAssertNil(resolve("iPhone19,5"))
+    XCTAssertNil(resolve("Watch7,1"))
+  }
+
+  func testCellularIPadsAreKnown() {
+    XCTAssertEqual(resolve("iPad15,4", idiom: .pad)?.largest, 18)
+    XCTAssertEqual(resolve("iPad15,6", idiom: .pad)?.largest, 18)
+    XCTAssertEqual(resolve("iPad15,8", idiom: .pad)?.largest, 25)
+    XCTAssertEqual(resolve("iPad16,8", idiom: .pad)?.largest, 18)
+  }
+
+  func testIPodTouchIsKnown() {
+    XCTAssertEqual(resolve("iPod9,1"), CornerRadii(uniform: 0))
+  }
+
+  // MARK: - Future models
+
+  func testNewerVariantOfNewestGenerationIsEstimated() {
+    // Known iPhone19 models are 62, 62, 59 (Duo) and 62, so the most common radius wins.
+    XCTAssertEqual(resolve("iPhone19,8"), CornerRadii(uniform: 62))
+  }
+
+  func testNewerGenerationIsEstimated() {
+    XCTAssertEqual(resolve("iPhone20,1"), CornerRadii(uniform: 62))
+    XCTAssertEqual(resolve("iPad18,1", idiom: .pad), CornerRadii(uniform: 30))
+  }
+
+  func testParseModelIdentifier() {
+    let parsed = parseModelIdentifier("iPhone19,4")
+    XCTAssertEqual(parsed?.prefix, "iPhone")
+    XCTAssertEqual(parsed?.generation, 19)
+    XCTAssertEqual(parsed?.variant, 4)
+    XCTAssertNil(parseModelIdentifier("x86_64"))
+    XCTAssertNil(parseModelIdentifier("iPhone"))
   }
 
   func testOtherIdiomReturnsZero() {

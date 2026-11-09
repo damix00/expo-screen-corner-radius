@@ -18,3 +18,7 @@ __tests__
 /Package.resolved
 /Tests/
 /.build/
+
+# Maintenance scripts and README images
+/scripts/
+/docs/

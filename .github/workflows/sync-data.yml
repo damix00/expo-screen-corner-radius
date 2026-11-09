@@ -1,0 +1,22 @@
+name: Device data
+
+# Fails when BezelKit has device data this package doesn't, so new iPhones and iPads get noticed.
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Check against BezelKit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm run sync-data -- --check

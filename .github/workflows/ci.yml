@@ -22,7 +22,16 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run build
+      - name: Check the committed build output is up to date
+        run: |
+          if [ -n "$(git status --porcelain build)" ]; then
+            git status --short build
+            echo "::error::build/ is out of date. Run \`npm run build\` and commit the result."
+            exit 1
+          fi
       - run: npm test -- --ci
+      - name: Check the npm package contents
+        run: npm pack --dry-run
 
   swift:
     name: Unit tests (Swift)
@@ -30,6 +39,36 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: swift test
+
+  ios-build:
+    name: Build the example app (iOS)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            example/package-lock.json
+      - run: npm ci
+      - run: npm ci
+        working-directory: example
+      # Compiles the real module against ExpoModulesCore, which `swift test` can't.
+      - run: npx expo prebuild --platform ios
+        working-directory: example
+      - name: Build for the simulator
+        working-directory: example/ios
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -workspace exposcreencornerradiusexample.xcworkspace \
+            -scheme exposcreencornerradiusexample \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO | tail -n 50
 
   android:
     name: Unit tests (Android)
