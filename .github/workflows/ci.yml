@@ -62,9 +62,13 @@ jobs:
         working-directory: example/ios
         run: |
           set -o pipefail
+          # Prebuild names the project after the app, so look it up rather than hardcoding it.
+          workspace="$(ls -d *.xcworkspace | head -n 1)"
+          scheme="${workspace%.xcworkspace}"
+          echo "Building $workspace (scheme $scheme)"
           xcodebuild build \
-            -workspace exposcreencornerradiusexample.xcworkspace \
-            -scheme exposcreencornerradiusexample \
+            -workspace "$workspace" \
+            -scheme "$scheme" \
             -configuration Debug \
             -sdk iphonesimulator \
             -destination 'generic/platform=iOS Simulator' \
