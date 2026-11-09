@@ -4,17 +4,32 @@ updates:
     directory: /
     schedule:
       interval: monthly
+    # One PR for all action bumps instead of one per action.
+    groups:
+      actions:
+        patterns: ["*"]
   - package-ecosystem: npm
     directory: /
     schedule:
       interval: monthly
-    # Expo SDK upgrades are done by hand, since expo, react-native and react move together.
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]
+    # These move together with the Expo SDK (expo-module-scripts pins compatible versions), so
+    # majors are upgraded by hand during an SDK upgrade rather than one at a time.
     ignore:
       - dependency-name: expo
         update-types: [version-update:semver-major]
       - dependency-name: expo-module-scripts
         update-types: [version-update:semver-major]
+      - dependency-name: eslint
+        update-types: [version-update:semver-major]
+      - dependency-name: typescript
+        update-types: [version-update:semver-major]
+      - dependency-name: "@testing-library/react-native"
+        update-types: [version-update:semver-major]
       - dependency-name: react-native
+      - dependency-name: react-native-web
       - dependency-name: react
       - dependency-name: react-dom
       - dependency-name: react-test-renderer
