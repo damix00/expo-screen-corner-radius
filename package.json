@@ -48,7 +48,7 @@
     "license": "MIT",
     "homepage": "https://github.com/damix00/expo-screen-corner-radius#readme",
     "devDependencies": {
-        "@testing-library/react-native": "^13.3.3",
+        "@testing-library/react-native": "^14.1.0",
         "@types/react": "~19.2.14",
         "eslint": "^9.39.5",
         "expo": "^56.0.3",
